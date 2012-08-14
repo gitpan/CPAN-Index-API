@@ -1,6 +1,6 @@
 package CPAN::Index::API::File::MailRc;
 {
-  $CPAN::Index::API::File::MailRc::VERSION = '0.001';
+  $CPAN::Index::API::File::MailRc::VERSION = '0.002';
 }
 
 # ABSTRACT: Read and write 01mailrc
@@ -80,7 +80,7 @@ CPAN::Index::API::File::MailRc - Read and write 01mailrc
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 AUTHOR
 

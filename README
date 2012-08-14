@@ -2,7 +2,7 @@ NAME
     CPAN::Index::API - OO interface to the CPAN index files
 
 VERSION
-    version 0.001
+    version 0.002
 
 AUTHOR
     Peter Shangov <pshangov@yahoo.com>

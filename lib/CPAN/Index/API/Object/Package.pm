@@ -1,6 +1,6 @@
 package CPAN::Index::API::Object::Package;
 {
-  $CPAN::Index::API::Object::Package::VERSION = '0.001';
+  $CPAN::Index::API::Object::Package::VERSION = '0.002';
 }
 
 # ABSTRACT: Package entry in 02packages.details
@@ -40,7 +40,7 @@ CPAN::Index::API::Object::Package - Package entry in 02packages.details
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 AUTHOR
 

@@ -1,6 +1,6 @@
 package CPAN::Index::API::Role::Writer;
 {
-  $CPAN::Index::API::Role::Writer::VERSION = '0.001';
+  $CPAN::Index::API::Role::Writer::VERSION = '0.002';
 }
 
 # ABSTRACT: Role for writing index files
@@ -9,7 +9,6 @@ use strict;
 use warnings;
 
 use File::Slurp    qw(write_file read_file);
-use File::Path     qw(make_path);
 use File::Basename qw(fileparse);
 use Path::Class    qw(file dir);
 use Text::Template qw(fill_in_string);
@@ -123,7 +122,7 @@ CPAN::Index::API::Role::Writer - Role for writing index files
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 AUTHOR
 

@@ -1,6 +1,6 @@
 package CPAN::Index::API::Object::Module;
 {
-  $CPAN::Index::API::Object::Module::VERSION = '0.001';
+  $CPAN::Index::API::Object::Module::VERSION = '0.002';
 }
 
 # ABSTRACT: Module entry in 03modlist.data
@@ -129,7 +129,7 @@ CPAN::Index::API::Object::Module - Module entry in 03modlist.data
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 AUTHOR
 

@@ -1,6 +1,6 @@
 package CPAN::Index::API::Object::Author;
 {
-  $CPAN::Index::API::Object::Author::VERSION = '0.001';
+  $CPAN::Index::API::Object::Author::VERSION = '0.002';
 }
 
 # ABSTRACT: Author entry in 01mailrc
@@ -41,7 +41,7 @@ CPAN::Index::API::Object::Author - Author entry in 01mailrc
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 AUTHOR
 

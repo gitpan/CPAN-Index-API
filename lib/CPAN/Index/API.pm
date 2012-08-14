@@ -1,6 +1,6 @@
 package CPAN::Index::API;
 {
-  $CPAN::Index::API::VERSION = '0.001';
+  $CPAN::Index::API::VERSION = '0.002';
 }
 
 # ABSTRACT: OO interface to the CPAN index files
@@ -8,7 +8,6 @@ package CPAN::Index::API;
 use strict;
 use warnings;
 
-use File::Path  qw(make_path);
 use Path::Class qw(dir);
 use Carp        qw(croak);
 use Class::Load qw(load_class);
@@ -124,16 +123,8 @@ sub write_all_files
 {
     my $self = shift;
 
-    make_path( dir($self->repo_path, 'authors')->stringify );
-    make_path( dir($self->repo_path, 'modules')->stringify );
-
+    dir($self->repo_path, $_)->mkpath for qw(authors modules);
     $_->write_to_tarball for $self->all_files;
-}
-
-sub _build_files
-{
-    my @files;
-
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -147,7 +138,7 @@ CPAN::Index::API - OO interface to the CPAN index files
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 AUTHOR
 
