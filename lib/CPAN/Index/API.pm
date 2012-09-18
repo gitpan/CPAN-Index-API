@@ -1,9 +1,9 @@
 package CPAN::Index::API;
 {
-  $CPAN::Index::API::VERSION = '0.002';
+  $CPAN::Index::API::VERSION = '0.003';
 }
 
-# ABSTRACT: OO interface to the CPAN index files
+# ABSTRACT: Read and write CPAN index files
 
 use strict;
 use warnings;
@@ -11,15 +11,15 @@ use warnings;
 use Path::Class qw(dir);
 use Carp        qw(croak);
 use Class::Load qw(load_class);
+use namespace::autoclean;
 use Moose;
 use Moose::Util::TypeConstraints qw(find_type_constraint);
-use namespace::clean -except => 'meta';
 
 has files => (
-    is      => 'ro',
-    isa     => 'HashRef[Object]',
+    is      => 'bare',
+    isa     => 'HashRef[CPAN::Index::API::File]',
     traits  => ['Hash'],
-    handles => { all_files => 'values', file => 'get' },
+    handles => { files => 'values', file => 'get', file_names => 'keys' },
 );
 
 has repo_path =>
@@ -122,23 +122,141 @@ sub new_from_repo_uri
 sub write_all_files
 {
     my $self = shift;
+    $_->write_to_default_location for $self->files;
+}
 
-    dir($self->repo_path, $_)->mkpath for qw(authors modules);
-    $_->write_to_tarball for $self->all_files;
+sub clone {
+    my ($self, %args) = @_;
+
+    my %new_files;
+    foreach my $file_name ( $self->file_names )
+    {
+        my $new_file = $self->file($file_name)->clone(%args);
+        $new_files{$file_name} = $new_file;
+    }
+
+    return (blessed $self)->meta->clone_object(
+        $self, files => \%new_files, %args
+    );
 }
 
 __PACKAGE__->meta->make_immutable;
+
 
 __END__
 =pod
 
 =head1 NAME
 
-CPAN::Index::API - OO interface to the CPAN index files
+CPAN::Index::API - Read and write CPAN index files
 
 =head1 VERSION
 
-version 0.002
+version 0.003
+
+=head1 SYNOPSIS
+
+    my $index = CPAN::Index::API->new_from_repo_uri(
+        repo_uri => 'http://cpan.perl.org/',
+        files => [qw(PackagesDetails ModList MailRc)],
+    );
+
+    my $packages = $index->file('PackagesDetails');
+
+=head1 DESRIPTION
+
+C<CPAN::Index::API> is a library to read and write CPAN index files. See the
+modules in the C<CPAN::Index::API::File> namesace for documentation on the
+individual files supported.
+
+This class provides a convenient interface for working with multiple files
+from the same location at the same time.
+
+=head1 CONSTRUCTION
+
+=head2 new
+
+Creates a new index object. Accepts the following parameters:
+
+=over
+
+=item files
+
+Required. Hashrefs whose values are C<CPAN::Index::API::File> objects. The
+individual objects can later be accessed by their respective hash key via the
+L</file> method.
+
+=item repo_path
+
+Optional. Path to the root of the repository to which the index files belong.
+
+=item repo_uri
+
+Optional. Base uri of the repository to which the index files belong.
+
+=back
+
+=head2 new_from_repo_path
+
+Creates a new index object by reading one or more index files from a local
+repository. Accepts the following parameters:
+
+=over
+
+=item files
+
+Required. Arrayref of names of index files to be read. Each name must be the
+name of a plugin under the C<CPAN::Index::API::File::> namespace, e.g.
+C<PackagesDetails>, C<ModList>, etc.
+
+=item repo_path
+
+Required. Path to the root of the local repository.
+
+=back
+
+=head2 new_from_repo_uri
+
+Creates a new index object by reading one or more index files from a remote
+repository. Accepts the following parameters:
+
+=over
+
+=item files
+
+Required. Arrayref of names of index files to be read. Each name must be the
+name of a plugin under the C<CPAN::Index::API::File::> namespace, e.g.
+C<PackagesDetails>, C<ModList>, etc.
+
+=item repo_uri
+
+Required. Path to the base uri of the remote repository.
+
+=back
+
+=head1 METHODS
+
+=head2 file
+
+Given the name of a file plugin loaded within the index, returns the object
+corresponding to this index file.
+
+=head2 repo_path
+
+Returns the path to the repository.
+
+=head2 repo_uri
+
+Returns the base uri of the repository.
+
+=head2 write_all_files
+
+Writes all index files to their default locations under C<repo_path>.
+
+=head2 clone
+
+Creates a new instance of this object, overloading any of the existing
+attributes with any arguments passed.
 
 =head1 AUTHOR
 

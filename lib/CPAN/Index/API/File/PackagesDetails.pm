@@ -1,72 +1,73 @@
 package CPAN::Index::API::File::PackagesDetails;
 {
-  $CPAN::Index::API::File::PackagesDetails::VERSION = '0.002';
+  $CPAN::Index::API::File::PackagesDetails::VERSION = '0.003';
 }
 
 # ABSTRACT: Write 02packages.details
 
 use strict;
 use warnings;
+
 use URI;
 use URI::file;
 use Path::Class qw(file dir);
 use Carp        qw(croak);
 use List::Util  qw(first);
+use namespace::autoclean;
 use Moose;
-with 'CPAN::Index::API::Role::Reader';
-with 'CPAN::Index::API::Role::Writer';
-use namespace::clean -except => 'meta';
 
-has '+filename' => (
-    default  => '02packages.details.txt',
-);
+extends qw(CPAN::Index::API::File);
+with qw(CPAN::Index::API::Role::Writer CPAN::Index::API::Role::Reader);
 
-has '+subdir' => (
-    default  => 'modules',
+has filename => (
+    is         => 'ro',
+    isa        => 'Str',
+    required   => 1,
+    lazy_build => 1,
 );
 
 has uri => (
-    is         => 'rw',
+    is         => 'ro',
     isa        => 'Str',
     required   => 1,
     lazy_build => 1,
 );
 
 has repo_uri => (
-    is  => 'rw',
+    is  => 'ro',
     isa => 'Str',
 );
 
 has description => (
-    is       => 'rw',
+    is       => 'ro',
     isa      => 'Str',
     required => 1,
     default  => 'Package names found in directory $CPAN/authors/id/',
 );
 
 has columns => (
-    is       => 'rw',
+    is       => 'ro',
     isa      => 'Str',
     required => 1,
     default  => 'package name, version, path',
 );
 
 has intended_for => (
-    is       => 'rw',
+    is       => 'ro',
     isa      => 'Str',
     required => 1,
     default  => 'Automated fetch routines, namespace documentation.',
 );
 
 has written_by => (
-    is       => 'rw',
+    is       => 'ro',
     isa      => 'Str',
     required => 1,
     default  => "CPAN::Index::API::File::PackagesDetails $CPAN::Index::API::File::PackagesDetails::VERSION",
 );
 
 has last_updated => (
-    is       => 'rw',
+    is       => 'ro',
     isa      => 'Str',
     required => 1,
     lazy     => 1,
@@ -74,13 +75,13 @@ has last_updated => (
 );
 
 has packages => (
-    is      => 'rw',
-    isa     => 'ArrayRef',
+    is      => 'bare',
+    isa     => 'ArrayRef[HashRef]',
     default => sub { [] },
     traits  => ['Array'],
     handles => {
         package_count => 'count',
-        package_list  => 'elements',
+        packages      => 'elements',
         add_package   => 'push',
     },
 );
@@ -106,13 +107,18 @@ sub BUILDARGS {
     }
 }
 
+sub _build_filename {
+    my $self = shift;
+    return file($self->default_location)->basename;
+}
+
 sub _build_uri {
     my $self = shift;
     my $uri = URI->new($self->repo_uri);
     $uri->path_segments(
         grep { $_ ne '' } $uri->path_segments,
-        $self->subdir,
-        $self->filename,
+        file($self->default_location)->dir->dir_list,
+        file($self->default_location)->basename,
     );
     return $uri->as_string;
 }
@@ -120,13 +126,13 @@ sub _build_uri {
 sub package
 {
     my ($self, $name) = @_;
-    return first { $_->name eq $name } $self->package_list;
+    return first { $_->{name} eq $name } $self->packages;
 }
 
 sub sorted_packages
 {
     my $self = shift;
-    return sort { $a->name cmp $b->name } $self->package_list;
+    return sort { $a->{name} cmp $b->{name} } $self->packages;
 }
 
 sub parse {
@@ -154,11 +160,11 @@ sub parse {
 
     foreach my $line ( @lines ) {
         my ( $name, $version, $distribution ) = split ' ', $line;
-        my $package = CPAN::Index::API::Object::Package->new(
+        my $package = {
             name         => $name,
             version      => $version,
             distribution => $distribution,
-        );
+        };
         push @packages, $package;
     }
 
@@ -167,12 +173,10 @@ sub parse {
     return %args;
 }
 
-sub default_locations
-{
-    return ['modules', '02packages.details.txt.gz'];
-}
+sub default_location { 'modules/02packages.details.txt.gz' }
 
 __PACKAGE__->meta->make_immutable;
+
 
 
 
@@ -184,7 +188,106 @@ CPAN::Index::API::File::PackagesDetails - Write 02packages.details
 
 =head1 VERSION
 
-version 0.002
+version 0.003
+
+=head1 SYNOPSIS
+
+  my $pckdetails = CPAN::Index::File::PackagesDetails->parse_from_repo_uri(
+    'http://cpan.perl.org'
+  );
+
+  foreach my $package ($pckdetails->packages) {
+    ... # do something
+  }
+
+=head1 DESCRIPTION
+
+This is a class to read and write 03modlist.data
+
+=head1 METHODS
+
+=head2 packages
+
+List of hashrefs representing packages indexed in the file. Each hashref
+has the following structure:
+
+=over
+
+=item name
+
+Package name, e.g. C<Foo::Bar>.
+
+=item version
+
+Package version, e.g. C<0.001>.
+
+=item distribuiton
+
+Distribution the package belongs to, e.g. C<Foo-Bar-0.001>.
+
+=back
+
+=head2 package_count
+
+Number of packages indexed in the file.
+
+=head2 filename
+
+Name of this file - defaults to C<02packages.details.txt.gz>;
+
+=head2 description
+
+Short description of the file.
+
+=head2 written_by
+
+Name and version of software that wrote the file.
+
+=head2 intended_for
+
+Target consumers of the file.
+
+=head2 last_updated
+
+Date and time when the file was last updated.
+
+=head2 uri
+
+Absolute URI pointing to the file location.
+
+=head2 parse
+
+Parses the file and reurns its representation as a data structure.
+
+=head2 default_location
+
+Default file location - C<modules/02packages.details.txt.gz>.
+
+=head1 METHODS FROM ROLES
+
+=over
+
+=item <CPAN::Index::API::Role::Reader/read_from_string>
+
+=item <CPAN::Index::API::Role::Reader/read_from_file>
+
+=item <CPAN::Index::API::Role::Reader/read_from_tarball>
+
+=item <CPAN::Index::API::Role::Reader/read_from_repo_path>
+
+=item <CPAN::Index::API::Role::Reader/read_from_repo_uri>
+
+=item L<CPAN::Index::API::Role::Writer/repo_path>
+
+=item L<CPAN::Index::API::Role::Writer/template>
+
+=item L<CPAN::Index::API::File::Role::Writer/content>
+
+=item L<CPAN::Index::API::File::Role::Writer/ write_to_file>
+
+=item L<CPAN::Index::API::File::Role::Writer/write_to_tarball>
+
+=back
 
 =head1 AUTHOR
 
@@ -215,9 +318,9 @@ Last-Updated: [% $self->last_updated  %]
         $OUT .= "\n";
         foreach my $package ($self->sorted_packages) {
             $OUT .= sprintf "%-34s %5s  %s\n",
-                $package->name,
-                defined $package->version ? $package->version : 'undef',
-                $package->distribution;
+                $package->{name},
+                defined $package->{version} ? $package->{version} : 'undef',
+                $package->{distribution};
         }
     }
     else

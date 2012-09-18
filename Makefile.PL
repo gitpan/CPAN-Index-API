@@ -30,22 +30,23 @@ my %WriteMakefileArgs = (
     "File::Basename" => 0,
     "File::Slurp" => 0,
     "File::Temp" => 0,
+    "LWP::Simple" => 0,
     "List::Util" => 0,
     "Moose" => 0,
     "Moose::Role" => 0,
     "Moose::Util::TypeConstraints" => 0,
-    "MooseX::Aliases" => 0,
     "Path::Class" => 0,
     "Scalar::Util" => 0,
     "Symbol" => 0,
     "Text::Template" => 0,
     "URI" => 0,
     "URI::file" => 0,
+    "namespace::autoclean" => 0,
     "namespace::clean" => 0,
     "strict" => 0,
     "warnings" => 0
   },
-  "VERSION" => "0.002",
+  "VERSION" => "0.003",
   "test" => {
     "TESTS" => "t/*.t"
   }

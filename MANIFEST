@@ -6,12 +6,10 @@ Makefile.PL
 README
 dist.ini
 lib/CPAN/Index/API.pm
+lib/CPAN/Index/API/File.pm
 lib/CPAN/Index/API/File/MailRc.pm
 lib/CPAN/Index/API/File/ModList.pm
 lib/CPAN/Index/API/File/PackagesDetails.pm
-lib/CPAN/Index/API/Object/Author.pm
-lib/CPAN/Index/API/Object/Module.pm
-lib/CPAN/Index/API/Object/Package.pm
 lib/CPAN/Index/API/Role/Reader.pm
 lib/CPAN/Index/API/Role/Writer.pm
 t/00-compile.t

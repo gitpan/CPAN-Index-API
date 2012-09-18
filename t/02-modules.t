@@ -5,14 +5,13 @@ use Test::Most;
 use File::Temp qw(tempfile);
 use File::Slurp qw(read_file);
 use CPAN::Index::API::File::ModList;
-use CPAN::Index::API::Object::Module;
 
 # defaults
 my $with_modules = <<'EndOfModules';
-File:        03modlist.data
+File:        03modlist.data.gz
 Description: Package names found in directory $CPAN/authors/id/
 Modcount:    3
-Written-By:  CPAN::Index::API::File::ModList 0.002
+Written-By:  CPAN::Index::API::File::ModList 0.003
 Date:        Fri Mar 23 18:23:15 2012 GMT
 
 package CPAN::Modulelist;
@@ -79,10 +78,10 @@ $CPAN::Modulelist::data = [
 EndOfModules
 
 my $without_modules = <<'EndOfModules';
-File:        03modlist.data
+File:        03modlist.data.gz
 Description: Package names found in directory $CPAN/authors/id/
 Modcount:    0
-Written-By:  CPAN::Index::API::File::ModList 0.002
+Written-By:  CPAN::Index::API::File::ModList 0.003
 Date:        Fri Mar 23 18:23:15 2012 GMT
 
 package CPAN::Modulelist;
@@ -114,18 +113,40 @@ $CPAN::Modulelist::cols = [
 $CPAN::Modulelist::data = [];
 EndOfModules
 
-my @modules = map {
-    CPAN::Index::API::Object::Module->new(
-        name         => $_->{name},
-        author       => $_->{author},
-        description  => $_->{description},
-        dslip        => $_->{dslip},
-        $_->{chapter} ? ( chapter => $_->{chapter} ) : (),
-    );
-} (
-    { name => 'Foo', author => 'FOOBAR', description => 'Foo for you', dslip => 'Sdcf?', chapter => '4' },
-    { name => 'Baz', author => 'LOCAL', description => 'Some baz', dslip => 'cdpf?', chapter => '4' },
-    { name => 'Acme::Qux', author => 'PSHANGOV', description => 'Qux your code', dslip => 'RdpO?', chapter => '23' },
+my @modules = (
+    {
+        name              => 'Foo',
+        authorid          => 'FOOBAR',
+        description       => 'Foo for you',
+        chapterid         => '4',
+        development_stage => 'S',
+        support_level     => 'd',
+        language_used     => 'c',
+        interface_style   => 'f',
+        public_license    => '?',
+    },
+    {
+        name              => 'Baz',
+        authorid          => 'LOCAL',
+        description       => 'Some baz',
+        chapterid         => '4',
+        development_stage => 'c',
+        support_level     => 'd',
+        language_used     => 'p',
+        interface_style   => 'f',
+        public_license    => '?',
+    },
+    {
+        name              => 'Acme::Qux',
+        authorid          => 'PSHANGOV',
+        description       => 'Qux your code',
+        chapterid         => '23',
+        development_stage => 'R',
+        support_level     => 'd',
+        language_used     => 'p',
+        interface_style   => 'O',
+        public_license    => '?',
+    },
 );
 
 my $version = $CPAN::Index::API::File::ModList::VERSION;
@@ -159,18 +180,16 @@ my $reader_with_modules = CPAN::Index::API::File::ModList->read_from_string($wit
 my $reader_without_modules = CPAN::Index::API::File::ModList->read_from_string($without_modules);
 
 my %expected = (
-    filename       => '03modlist.data',
+    filename       => '03modlist.data.gz',
     written_by     => "CPAN::Index::API::File::ModList $version",
-    tarball_suffix => 'gz',
     description    => 'Package names found in directory $CPAN/authors/id/',
-    subdir         => 'modules'
 );
 
 foreach my $attribute ( keys %expected ) {
     is ( $reader_without_modules->$attribute, $expected{$attribute}, "read $attribute (without modules)" );
 }
 
-my @no_modules = $reader_without_modules->module_list;
+my @no_modules = $reader_without_modules->modules;
 
 ok ( !@no_modules, "reader without modules has no modules" );
 
@@ -178,20 +197,18 @@ foreach my $attribute ( keys %expected ) {
     is ( $reader_with_modules->$attribute, $expected{$attribute}, "read $attribute (with modules)" );
 }
 
-my @three_modules = $reader_with_modules->module_list;
+my @three_modules = $reader_with_modules->modules;
 
 is ( scalar @three_modules, 3, "reader with modules has 3 modules" );
 
-(my $foo) = grep { $_->name eq 'Foo' } @three_modules;
-
-isa_ok ($foo, 'CPAN::Index::API::Object::Module' );
+(my $foo) = grep { $_->{name} eq 'Foo' } @three_modules;
 
 my %expected_attributes = (
     name              => 'Foo',
-    chapter           => 4,
-    author            => 'FOOBAR',
+    chapterid         => 4,
+    authorid          => 'FOOBAR',
     description       => 'Foo for you',
-    public_license    => '?',
+    public_license    => undef,
     development_stage => 'S',
     language_used     => 'c',
     support_level     => 'd',
@@ -199,7 +216,7 @@ my %expected_attributes = (
 );
 
 foreach my $attribute ( keys %expected_attributes ) {
-    is ( $foo->$attribute, $expected_attributes{$attribute}, "read module $attribute" );
+    is ( $foo->{$attribute}, $expected_attributes{$attribute}, "read module $attribute" );
 }
 
 done_testing;

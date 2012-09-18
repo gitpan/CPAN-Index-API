@@ -6,12 +6,11 @@ use File::Temp qw(tempfile);
 use File::Slurp qw(read_file);
 use Compress::Zlib qw(gzopen);
 use CPAN::Index::API::File::PackagesDetails;
-use CPAN::Index::API::Object::Package;
 
 # defaults
 my $with_packages = <<'EndOfPackages';
-File:         02packages.details.txt
-URL:          http://www.example.com/modules/02packages.details.txt
+File:         02packages.details.txt.gz
+URL:          http://www.example.com/modules/02packages.details.txt.gz
 Description:  Package names found in directory $CPAN/authors/id/
 Columns:      package name, version, path
 Intended-For: Automated fetch routines, namespace documentation.
@@ -26,8 +25,8 @@ Foo::Bar                           undef  F/FO/FOOBAR/Foo-0.01.tar.gz
 EndOfPackages
 
 my $without_packages = <<'EndOfPackages';
-File:         02packages.details.txt
-URL:          http://www.example.com/modules/02packages.details.txt
+File:         02packages.details.txt.gz
+URL:          http://www.example.com/modules/02packages.details.txt.gz
 Description:  Package names found in directory $CPAN/authors/id/
 Columns:      package name, version, path
 Intended-For: Automated fetch routines, namespace documentation.
@@ -36,13 +35,7 @@ Line-Count:   0
 Last-Updated: Fri Mar 23 18:23:15 2012 GMT
 EndOfPackages
 
-my @packages = map {
-    CPAN::Index::API::Object::Package->new(
-        name         => $_->{name},
-        version      => $_->{version},
-        distribution => $_->{distribution},
-    );
-} (
+my @packages = (
     { name => 'Foo',       version => '0.01',  distribution => 'F/FO/FOOBAR/Foo-0.01.tar.gz' },
     { name => 'Foo::Bar',  version =>  undef,  distribution => 'F/FO/FOOBAR/Foo-0.01.tar.gz' },
     { name => 'Baz',       version => '1.234', distribution => 'L/LO/LOCAL/Baz-1.234.tar.gz' },
@@ -81,11 +74,9 @@ my $reader_without_packages = CPAN::Index::API::File::PackagesDetails->read_from
 my %expected = (
     last_updated   => 'Fri Mar 23 18:23:15 2012 GMT',
     intended_for   => 'Automated fetch routines, namespace documentation.',
-    tarball_suffix => 'gz',
     description    => 'Package names found in directory $CPAN/authors/id/',
-    uri            => 'http://www.example.com/modules/02packages.details.txt',
-    subdir         => 'modules',
-    filename       => '02packages.details.txt',
+    uri            => 'http://www.example.com/modules/02packages.details.txt.gz',
+    filename       => '02packages.details.txt.gz',
     written_by     => 'CPAN::Index::API::File::PackagesDetails 0.001',
     columns        => 'package name, version, path',
 );
@@ -94,7 +85,7 @@ foreach my $attribute ( keys %expected ) {
     is ( $reader_without_packages->$attribute, $expected{$attribute}, "read $attribute (without packages)" );
 }
 
-my @no_packages = $reader_without_packages->package_list;
+my @no_packages = $reader_without_packages->packages;
 
 ok ( !@no_packages, "reader without packages has no packages" );
 
@@ -102,17 +93,15 @@ foreach my $attribute ( keys %expected ) {
     is ( $reader_with_packages->$attribute, $expected{$attribute}, "read $attribute (with packages)" );
 }
 
-my @four_packages = $reader_with_packages->package_list;
+my @four_packages = $reader_with_packages->packages;
 
 is ( scalar @four_packages, 4, "reader with packages has 4 packages" );
 
-(my $foo) = grep { $_->name eq 'Foo' } @four_packages;
+(my $foo) = grep { $_->{name} eq 'Foo' } @four_packages;
 
-isa_ok ($foo, 'CPAN::Index::API::Object::Package' );
-
-is ( $foo->name,         'Foo',                         'read package name'         );
-is ( $foo->version,      '0.01',                        'read package version'      );
-is ( $foo->distribution, 'F/FO/FOOBAR/Foo-0.01.tar.gz', 'read package distribution' );
+is ( $foo->{name},         'Foo',                         'read package name'         );
+is ( $foo->{version},      '0.01',                        'read package version'      );
+is ( $foo->{distribution}, 'F/FO/FOOBAR/Foo-0.01.tar.gz', 'read package distribution' );
 
 my ($tarball_fh_with_packages, $tarball_name_with_packages) = tempfile;
 $writer_with_packages->write_to_tarball($tarball_name_with_packages);
@@ -123,5 +112,19 @@ $content_from_tarball .= $buffer while $gz->gzread($buffer) > 0 ;
 $gz->gzclose;
 
 is ( $content_from_tarball, $with_packages, 'read_from_tarball');
+
+my $mutable_writer = CPAN::Index::API::File::PackagesDetails->new(
+    repo_uri     => 'http://www.example.com',
+    last_updated => 'Fri Mar 23 18:23:15 2012 GMT',
+    written_by   => 'CPAN::Index::API::File::PackagesDetails 0.001',
+    packages     => [@packages[0..2]],
+);
+
+unlike $mutable_writer->content, qr/PSHANGOV/, 'content before addition';
+
+$mutable_writer->add_package($packages[3]);
+$mutable_writer->rebuild_content;
+
+like $mutable_writer->content, qr/PSHANGOV/, 'content after addition';
 
 done_testing;
