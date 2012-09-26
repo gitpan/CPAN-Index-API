@@ -1,6 +1,6 @@
 package CPAN::Index::API::File;
 {
-  $CPAN::Index::API::File::VERSION = '0.003';
+  $CPAN::Index::API::File::VERSION = '0.004';
 }
 
 # ABSTRACT: Base class for index file objects
@@ -25,7 +25,7 @@ CPAN::Index::API::File - Base class for index file objects
 
 =head1 VERSION
 
-version 0.003
+version 0.004
 
 =head1 DESCRIPTION
 

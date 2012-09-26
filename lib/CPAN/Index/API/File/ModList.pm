@@ -1,6 +1,6 @@
 package CPAN::Index::API::File::ModList;
 {
-  $CPAN::Index::API::File::ModList::VERSION = '0.003';
+  $CPAN::Index::API::File::ModList::VERSION = '0.004';
 }
 
 # ABSTRACT: Read and write 03modlist.data
@@ -156,7 +156,7 @@ CPAN::Index::API::File::ModList - Read and write 03modlist.data
 
 =head1 VERSION
 
-version 0.003
+version 0.004
 
 =head1 SYNOPSIS
 
