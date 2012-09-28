@@ -1,6 +1,6 @@
 package CPAN::Index::API::File::PackagesDetails;
 {
-  $CPAN::Index::API::File::PackagesDetails::VERSION = '0.005';
+  $CPAN::Index::API::File::PackagesDetails::VERSION = '0.006';
 }
 
 # ABSTRACT: Interface to 02packages.details.txt
@@ -166,7 +166,7 @@ CPAN::Index::API::File::PackagesDetails - Interface to 02packages.details.txt
 
 =head1 VERSION
 
-version 0.005
+version 0.006
 
 =head1 SYNOPSIS
 

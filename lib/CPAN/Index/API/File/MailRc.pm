@@ -1,6 +1,6 @@
 package CPAN::Index::API::File::MailRc;
 {
-  $CPAN::Index::API::File::MailRc::VERSION = '0.005';
+  $CPAN::Index::API::File::MailRc::VERSION = '0.006';
 }
 
 # ABSTRACT: Interface to 01mailrc.txt
@@ -74,7 +74,7 @@ CPAN::Index::API::File::MailRc - Interface to 01mailrc.txt
 
 =head1 VERSION
 
-version 0.005
+version 0.006
 
 =head1 SYNOPSIS
 

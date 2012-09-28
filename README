@@ -2,7 +2,7 @@ NAME
     CPAN::Index::API - Read and write CPAN index files
 
 VERSION
-    version 0.005
+    version 0.006
 
 SYNOPSIS
         my $index = CPAN::Index::API->new_from_repo_uri(

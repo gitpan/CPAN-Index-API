@@ -1,6 +1,6 @@
 package CPAN::Index::API::File::Whois;
 {
-  $CPAN::Index::API::File::Whois::VERSION = '0.005';
+  $CPAN::Index::API::File::Whois::VERSION = '0.006';
 }
 
 # ABSTRACT: Interface to 00whois.xml
@@ -128,7 +128,7 @@ CPAN::Index::API::File::Whois - Interface to 00whois.xml
 
 =head1 VERSION
 
-version 0.005
+version 0.006
 
 =head1 SYNOPSIS
 

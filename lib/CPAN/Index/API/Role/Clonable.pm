@@ -1,6 +1,6 @@
 package CPAN::Index::API::Role::Clonable;
 {
-  $CPAN::Index::API::Role::Clonable::VERSION = '0.005';
+  $CPAN::Index::API::Role::Clonable::VERSION = '0.006';
 }
 
 # ABSTRACT: Clones index file objects
@@ -28,7 +28,7 @@ CPAN::Index::API::Role::Clonable - Clones index file objects
 
 =head1 VERSION
 
-version 0.005
+version 0.006
 
 =head1 PROVIDES
 

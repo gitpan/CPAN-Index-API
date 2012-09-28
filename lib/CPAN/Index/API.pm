@@ -1,6 +1,6 @@
 package CPAN::Index::API;
 {
-  $CPAN::Index::API::VERSION = '0.005';
+  $CPAN::Index::API::VERSION = '0.006';
 }
 
 # ABSTRACT: Read and write CPAN index files
@@ -152,7 +152,7 @@ CPAN::Index::API - Read and write CPAN index files
 
 =head1 VERSION
 
-version 0.005
+version 0.006
 
 =head1 SYNOPSIS
 
