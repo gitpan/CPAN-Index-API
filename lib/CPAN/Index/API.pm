@@ -1,6 +1,6 @@
 package CPAN::Index::API;
 {
-  $CPAN::Index::API::VERSION = '0.004';
+  $CPAN::Index::API::VERSION = '0.005';
 }
 
 # ABSTRACT: Read and write CPAN index files
@@ -17,7 +17,7 @@ use Moose::Util::TypeConstraints qw(find_type_constraint);
 
 has files => (
     is      => 'bare',
-    isa     => 'HashRef[CPAN::Index::API::File]',
+    isa     => 'HashRef',
     traits  => ['Hash'],
     handles => { files => 'values', file => 'get', file_names => 'keys' },
 );
@@ -152,7 +152,7 @@ CPAN::Index::API - Read and write CPAN index files
 
 =head1 VERSION
 
-version 0.004
+version 0.005
 
 =head1 SYNOPSIS
 

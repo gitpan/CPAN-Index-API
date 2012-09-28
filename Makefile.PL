@@ -9,7 +9,7 @@ use ExtUtils::MakeMaker 6.30;
 
 
 my %WriteMakefileArgs = (
-  "ABSTRACT" => "OO interface to the CPAN index files",
+  "ABSTRACT" => "Read and write CPAN index files",
   "AUTHOR" => "Peter Shangov <pshangov\@yahoo.com>",
   "BUILD_REQUIRES" => {
     "File::Find" => 0,
@@ -49,7 +49,7 @@ my %WriteMakefileArgs = (
     "strict" => 0,
     "warnings" => 0
   },
-  "VERSION" => "0.004",
+  "VERSION" => "0.005",
   "test" => {
     "TESTS" => "t/*.t"
   }

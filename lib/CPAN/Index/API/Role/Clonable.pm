@@ -1,11 +1,14 @@
-package CPAN::Index::API::File;
+package CPAN::Index::API::Role::Clonable;
 {
-  $CPAN::Index::API::File::VERSION = '0.005';
+  $CPAN::Index::API::Role::Clonable::VERSION = '0.005';
 }
 
-# ABSTRACT: Base class for index file objects
+# ABSTRACT: Clones index file objects
 
-use Moose;
+use strict;
+use warnings;
+
+use Moose::Role;
 
 sub clone
 {
@@ -13,29 +16,26 @@ sub clone
     $self->meta->clone_object($self, %params);
 }
 
-__PACKAGE__->meta->make_immutable;
 
+1;
 
 __END__
 =pod
 
 =head1 NAME
 
-CPAN::Index::API::File - Base class for index file objects
+CPAN::Index::API::Role::Clonable - Clones index file objects
 
 =head1 VERSION
 
 version 0.005
 
-=head1 DESCRIPTION
-
-All index file implementations should inherit from this class.
-
 =head1 PROVIDES
 
 =head2 clone
 
-Clones the object. See L<Class::MOP::Class/clone> for details.
+Clones the objecct. Parameters can be supplied as key/value paris to override
+the values of existing attributes.
 
 =head1 AUTHOR
 

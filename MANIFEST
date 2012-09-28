@@ -11,8 +11,11 @@ lib/CPAN/Index/API/File/MailRc.pm
 lib/CPAN/Index/API/File/ModList.pm
 lib/CPAN/Index/API/File/PackagesDetails.pm
 lib/CPAN/Index/API/File/Whois.pm
-lib/CPAN/Index/API/Role/Reader.pm
-lib/CPAN/Index/API/Role/Writer.pm
+lib/CPAN/Index/API/Role/Clonable.pm
+lib/CPAN/Index/API/Role/HavingFilename.pm
+lib/CPAN/Index/API/Role/HavingGeneratedBy.pm
+lib/CPAN/Index/API/Role/Readable.pm
+lib/CPAN/Index/API/Role/Writable.pm
 t/00-compile.t
 t/01-packages.t
 t/02-modules.t

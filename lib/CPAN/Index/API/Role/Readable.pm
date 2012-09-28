@@ -1,9 +1,9 @@
-package CPAN::Index::API::Role::Reader;
+package CPAN::Index::API::Role::Readable;
 {
-  $CPAN::Index::API::Role::Reader::VERSION = '0.004';
+  $CPAN::Index::API::Role::Readable::VERSION = '0.005';
 }
 
-# ABSTRACT: Role for reading index files
+# ABSTRACT: Reads index files
 
 use strict;
 use warnings;
@@ -108,11 +108,11 @@ __END__
 
 =head1 NAME
 
-CPAN::Index::API::Role::Reader - Role for reading index files
+CPAN::Index::API::Role::Readable - Reads index files
 
 =head1 VERSION
 
-version 0.004
+version 0.005
 
 =head1 DESCRIPTION
 

@@ -1,9 +1,9 @@
-package CPAN::Index::API::Role::Writer;
+package CPAN::Index::API::Role::Writable;
 {
-  $CPAN::Index::API::Role::Writer::VERSION = '0.004';
+  $CPAN::Index::API::Role::Writable::VERSION = '0.005';
 }
 
-# ABSTRACT: Role for writing index files
+# ABSTRACT: Writes index files
 
 use strict;
 use warnings;
@@ -126,11 +126,11 @@ __END__
 
 =head1 NAME
 
-CPAN::Index::API::Role::Writer - Role for writing index files
+CPAN::Index::API::Role::Writable - Writes index files
 
 =head1 VERSION
 
-version 0.004
+version 0.005
 
 =head1 DESCRIPTION
 
