@@ -1,6 +1,6 @@
 package CPAN::Index::API::File::PackagesDetails;
 {
-  $CPAN::Index::API::File::PackagesDetails::VERSION = '0.006';
+  $CPAN::Index::API::File::PackagesDetails::VERSION = '0.007';
 }
 
 # ABSTRACT: Interface to 02packages.details.txt
@@ -138,6 +138,10 @@ sub parse {
 
     foreach my $line ( @lines ) {
         my ( $name, $version, $distribution ) = split ' ', $line;
+
+        # normalize missing version
+        undef $version if $version eq 'undef';
+
         my $package = {
             name         => $name,
             version      => $version,
@@ -166,7 +170,7 @@ CPAN::Index::API::File::PackagesDetails - Interface to 02packages.details.txt
 
 =head1 VERSION
 
-version 0.006
+version 0.007
 
 =head1 SYNOPSIS
 

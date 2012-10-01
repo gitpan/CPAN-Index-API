@@ -1,6 +1,6 @@
 package CPAN::Index::API::File::MailRc;
 {
-  $CPAN::Index::API::File::MailRc::VERSION = '0.006';
+  $CPAN::Index::API::File::MailRc::VERSION = '0.007';
 }
 
 # ABSTRACT: Interface to 01mailrc.txt
@@ -46,6 +46,9 @@ sub parse {
             $long =~ s/^"//;
             $long =~ s/"$//;
             my ($name, $email) = $long =~ /(.*) <(.+)>$/;
+
+            undef $email if $email eq 'CENSORED';
+
             my $author = {
                 authorid => $authorid,
                 name     => $name,
@@ -74,7 +77,7 @@ CPAN::Index::API::File::MailRc - Interface to 01mailrc.txt
 
 =head1 VERSION
 
-version 0.006
+version 0.007
 
 =head1 SYNOPSIS
 
@@ -110,8 +113,7 @@ Author's full name.
 
 =item email
 
-Author's email. The string C<CENSORED> may appear where the email address is
-not available or onot to be displayed publicly.
+Author's email.
 
 =back
 

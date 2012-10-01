@@ -1,6 +1,6 @@
 package CPAN::Index::API::File::Whois;
 {
-  $CPAN::Index::API::File::Whois::VERSION = '0.006';
+  $CPAN::Index::API::File::Whois::VERSION = '0.007';
 }
 
 # ABSTRACT: Interface to 00whois.xml
@@ -71,8 +71,10 @@ sub parse {
         my %data;
 
         foreach my $field ( $self->_original_fields ) {
-            my $elt = $author->first_child($field);
-            $data{ $self->_name_for_orig_field($field) } = $elt->text if $elt;
+            if ( my $elt = $author->first_child($field) ) {
+                my $elt_text = $elt->text eq '' ? undef : $elt->text;
+                $data{ $self->_name_for_orig_field($field) } = $elt_text;
+            }
         }
 
         push @authors, \%data;
@@ -99,10 +101,12 @@ sub _build_content {
         my $elt_cpanid = XML::Twig::Elt->new('cpanid');
 
         foreach my $name ( $self->_original_fields ) {
-            if ( exists $author->{ $self->_name_for_orig_field($name) } ) {
+            my $name_for_orig_field =  $self->_name_for_orig_field($name);
+            if ( exists $author->{$name_for_orig_field} ) {
                 my $elt_attribute = XML::Twig::Elt->new($name);
                 $elt_attribute->set_text(
-                    $author->{ $self->_name_for_orig_field($name) }
+                    defined $author->{$name_for_orig_field}
+                        ? $author->{$name_for_orig_field} : ''
                 );
                 $elt_attribute->paste( last_child => $elt_cpanid );
             }
@@ -128,7 +132,7 @@ CPAN::Index::API::File::Whois - Interface to 00whois.xml
 
 =head1 VERSION
 
-version 0.006
+version 0.007
 
 =head1 SYNOPSIS
 

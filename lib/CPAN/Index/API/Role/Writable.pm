@@ -1,6 +1,6 @@
 package CPAN::Index::API::Role::Writable;
 {
-  $CPAN::Index::API::Role::Writable::VERSION = '0.006';
+  $CPAN::Index::API::Role::Writable::VERSION = '0.007';
 }
 
 # ABSTRACT: Writes index files
@@ -130,7 +130,7 @@ CPAN::Index::API::Role::Writable - Writes index files
 
 =head1 VERSION
 
-version 0.006
+version 0.007
 
 =head1 DESCRIPTION
 

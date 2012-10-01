@@ -1,6 +1,6 @@
 package CPAN::Index::API::Role::HavingFilename;
 {
-  $CPAN::Index::API::Role::HavingFilename::VERSION = '0.006';
+  $CPAN::Index::API::Role::HavingFilename::VERSION = '0.007';
 }
 
 # ABSTRACT: Provides 'filename' attribute
@@ -37,7 +37,7 @@ CPAN::Index::API::Role::HavingFilename - Provides 'filename' attribute
 
 =head1 VERSION
 
-version 0.006
+version 0.007
 
 =head1 REQUIRES
 
